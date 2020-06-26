@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using PromRepublisher.MetricsCommon;
 
 namespace PromRepublisher
 {
@@ -26,7 +20,13 @@ namespace PromRepublisher
         public void ConfigureServices(IServiceCollection services)
         {
             Prometheus.Metrics.SuppressDefaultMetrics();
-            services.AddSingleton<MetricsHandler>();
+            IMetricRegistry registry = new MetricRegistry();
+            // add Glue metrics;
+            registry.AddGlueMetric(new PerfMemoryMetric());
+            registry.AddGlueMetric(new PerfEntriesMetric());
+            services.AddSingleton(registry);
+
+            services.AddSingleton(new MetricHandler(registry));
             services.AddControllers();
         }
 

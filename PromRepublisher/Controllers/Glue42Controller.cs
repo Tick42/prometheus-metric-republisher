@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using PromRepublisher.MetricsCommon;
 
 namespace PromRepublisher.Controllers
 {
@@ -10,18 +7,18 @@ namespace PromRepublisher.Controllers
     [ApiController]
     public class Glue42Controller : ControllerBase
     {
-        private readonly MetricsHandler metricsHandler_;
+        private readonly MetricHandler metricHandler_;
 
-        public Glue42Controller(MetricsHandler metricsHandler)
+        public Glue42Controller(MetricHandler metricHandler)
         {
-            metricsHandler_ = metricsHandler;
+            metricHandler_ = metricHandler;
         }
 
         // POST api/rest/metrics
         [HttpPost]
         public void Post([FromBody] System.Text.Json.JsonElement jel)
         {
-            metricsHandler_.OnMetric(ref jel);
+            metricHandler_.OnMetric(ref jel);
         }
     }
 }

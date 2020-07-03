@@ -23,8 +23,7 @@ namespace PromRepublisher.MetricsCommon
                 promResourceDuration = LinkedPromMetrics[2];
                 promNavigationCount = LinkedPromMetrics[3];
                 promNavigationDuration = LinkedPromMetrics[4];
-                promPaintCount = LinkedPromMetrics[5];
-                promPaintDuration = LinkedPromMetrics[6];
+                promNavigationRenderDuration = LinkedPromMetrics[5];
             }
         }
 
@@ -33,8 +32,7 @@ namespace PromRepublisher.MetricsCommon
         private IPromMetric promResourceDuration;
         private IPromMetric promNavigationCount;
         private IPromMetric promNavigationDuration;
-        private IPromMetric promPaintCount;
-        private IPromMetric promPaintDuration;
+        private IPromMetric promNavigationRenderDuration;
 
         public PerfEntriesMetric()
         {
@@ -83,16 +81,8 @@ namespace PromRepublisher.MetricsCommon
                 new PromMetricDef() // index 5
                 {
                     MetricType = PromMetricType.Counter,
-                    Name = "glue_web_paint_count",
-                    Help = "Number of reported paint entries",
-                    CommonLabels = IGlueMetric.CommonLabels,
-                    SpecificLabels = new string[0],
-                },
-                new PromMetricDef() // index 6
-                {
-                    MetricType = PromMetricType.Counter,
-                    Name = "glue_web_paint_duration_total",
-                    Help = "Total duration of paint entries",
+                    Name = "glue_web_navigation_render_duration_total",
+                    Help = "Total rendering duration",
                     CommonLabels = IGlueMetric.CommonLabels,
                     SpecificLabels = new string[0],
                 },
@@ -108,8 +98,9 @@ namespace PromRepublisher.MetricsCommon
                 double resourceDuration = 0;
                 long navigationCount = 0;
                 double navigationDuration = 0;
-                long paintCount = 0;
-                double paintDuration = 0;
+                double navigationRenderDuration = 0;
+                //long paintCount = 0;
+                //double paintDuration = 0;
 
                 var datapointsEl = metricEl.GetProperty("datapoints");
                 int nDatapoints = datapointsEl.GetArrayLength();
@@ -139,26 +130,28 @@ namespace PromRepublisher.MetricsCommon
                                 if (entryType == "navigation")
                                 {
                                     double duration = entryEl.GetProperty("duration").GetDouble();
+                                    double responseEnd = entryEl.GetProperty("responseEnd").GetDouble();
+                                    double domComplete = entryEl.GetProperty("domComplete").GetDouble();
                                     navigationCount++;
                                     navigationDuration += duration;
+                                    navigationRenderDuration += domComplete - responseEnd;
                                     continue;
                                 }
-                                if (entryType == "paint")
-                                {
-                                    double duration = entryEl.GetProperty("duration").GetDouble();
-                                    paintCount++;
-                                    paintDuration += duration;
-                                    continue;
-                                }
+                                //if (entryType == "paint")
+                                //{
+                                //    double duration = entryEl.GetProperty("duration").GetDouble();
+                                //    paintCount++;
+                                //    paintDuration += duration;
+                                //    continue;
+                                //}
                             }
                             catch
                             {
                                 continue; // silently ignore issues with the entries
                             }
-                        }
-
-                    }
-                }
+                        } // entries loop
+                    } // using JsonDocument
+                } // datapoints loop
 
                 using (Registry.AcquireMetricValueUpdateLock())
                 {
@@ -167,8 +160,9 @@ namespace PromRepublisher.MetricsCommon
                     promResourceDuration.Inc(resourceDuration, commonLabels);
                     promNavigationCount.Inc(navigationCount, commonLabels);
                     promNavigationDuration.Inc(navigationDuration, commonLabels);
-                    promPaintCount.Inc(paintCount, commonLabels);
-                    promPaintDuration.Inc(paintDuration, commonLabels);
+                    promNavigationRenderDuration.Inc(navigationRenderDuration, commonLabels);
+                    //promPaintCount.Inc(paintCount, commonLabels);
+                    //promPaintDuration.Inc(paintDuration, commonLabels);
                 }
 
                 return true;

@@ -28,13 +28,12 @@ This metric will be transformed into the following Prometheus metrics:
 
 |Name|Type|Description|
 |----|:--:|-----------|
-| glue_web_resource_count | Counter | Number of web resources loaded |
-| glue_web_resource_duration_total | Counter | Total load duration of all web resources |
-| glue_web_resource_size_total | Counter | Size of all loaded web resources |
+| glue_web_resource_count | Counter | Number reported `resource` entries |
+| glue_web_resource_duration_total | Counter | Sum of `duration`'s of all `resource` entries |
+| glue_web_resource_size_total | Counter | Sum of `transferSize` of all `resource` entries |
 | glue_web_navigation_count | Counter | Number of reported `navigation` entries |
-| glue_web_navigation_duration_total | Counter | Total duration of `navigation` entries |
-| glue_web_paint_count | Counter | Number of reported `paint` entries |
-| glue_web_paint_duration_total | Counter | Total duration of `paint` entries |
+| glue_web_navigation_duration_total | Counter | Total duration of `navigation` entries.<br>Duration is measured as the difference `loadEventEnd` - `unloadEventStart` |
+| glue_web_navigation_render_duration_total | Counter | Total render duration of `navigation` entries.<br>Duration is measured as the difference `domComplete` - `responseEnd` |
 
 ## Sample Configuration
 
@@ -90,6 +89,18 @@ This will publish/push `/App/performance/...` metrics to the sample app's web se
         }
 ```
 
+### Prometheus
+Below is a sample Prometheus scrape configuration for collecting data from the PromRepublisher
+```yaml
+scrape_configs:
+  - job_name: 'glue42'
+    honor_labels: true
+    scrape_interval: 60s
+    static_configs:
+    - targets: ['localhost:9942']
+```
+
+Please note that `scrape_interval` should not be shorter than the `publishInterval` in the Glue configuration.
 
 ## Other
 ###### This application uses the [prometheus-net](https://github.com/prometheus-net/prometheus-net/) client library (MIT license) as a NuGet package

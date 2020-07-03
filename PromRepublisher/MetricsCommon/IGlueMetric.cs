@@ -17,7 +17,7 @@ namespace PromRepublisher.MetricsCommon
             string process = null;
             if (jel.TryGetProperty("identity", out JsonElement identityEl))
             {
-                if (identityEl.TryGetProperty("applicationName", out JsonElement appNameEl))
+                if (identityEl.TryGetProperty("application", out JsonElement appNameEl))
                 {
                     appName = appNameEl.ToString();
                 }

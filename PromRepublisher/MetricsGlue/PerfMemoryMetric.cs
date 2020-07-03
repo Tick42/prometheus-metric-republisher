@@ -7,13 +7,25 @@ namespace PromRepublisher.MetricsCommon
         public string GlueMetricPropName { get; } = "/App/performance/memory";
         public PromMetricDef[] PromMetricDefs { get; }
         public IMetricRegistry Registry { get; set; }
-        public IPromMetric[] LinkedPromMetrics { get; set; }
 
-        enum MIndex
+        private IPromMetric[] linkedPromMetrics_;
+        public IPromMetric[] LinkedPromMetrics
         {
-            totalJSHeapSize = 0,
-            usedJSHeapSize = 1,
+            get
+            {
+                return linkedPromMetrics_;
+            }
+            set
+            {
+                linkedPromMetrics_ = value;
+                promTotalJSHeapSize = LinkedPromMetrics[0];
+                promUsedJSHeapSize = LinkedPromMetrics[1];
+            }
         }
+
+        private IPromMetric promTotalJSHeapSize;
+        private IPromMetric promUsedJSHeapSize;
+        
 
         public PerfMemoryMetric()
         {
@@ -60,13 +72,10 @@ namespace PromRepublisher.MetricsCommon
                     }
                 }
 
-                IPromMetric PromTotalJSHeapSize = LinkedPromMetrics[(int)MIndex.totalJSHeapSize];
-                IPromMetric PromUsedJSHeapSize = LinkedPromMetrics[(int)MIndex.usedJSHeapSize];
-
                 using (Registry.AcquireMetricValueUpdateLock())
                 {
-                    PromTotalJSHeapSize.Set(totalJSHeapSize, commonLabels);
-                    PromUsedJSHeapSize.Set(usedJSHeapSize, commonLabels);
+                    promTotalJSHeapSize.Set(totalJSHeapSize, commonLabels);
+                    promUsedJSHeapSize.Set(usedJSHeapSize, commonLabels);
                 }
 
                 return true;

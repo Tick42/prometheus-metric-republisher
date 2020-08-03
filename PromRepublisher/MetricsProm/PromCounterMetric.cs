@@ -1,6 +1,7 @@
 ﻿using Prometheus;
+using PromRepublisher.MetricsCommon;
 
-namespace PromRepublisher.MetricsCommon
+namespace PromRepublisher.MetricsProm
 {
     public class PromCounterMetric : IPromMetric
     {

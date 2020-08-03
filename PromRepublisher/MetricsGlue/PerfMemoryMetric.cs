@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using PromRepublisher.MetricsCommon;
 
-namespace PromRepublisher.MetricsCommon
+namespace PromRepublisher.MetricsGlue
 {
     public class PerfMemoryMetric : IGlueMetric
     {
@@ -18,13 +20,13 @@ namespace PromRepublisher.MetricsCommon
             set
             {
                 linkedPromMetrics_ = value;
-                promTotalJSHeapSize = LinkedPromMetrics[0];
-                promUsedJSHeapSize = LinkedPromMetrics[1];
+                promTotalJSHeapSize_ = LinkedPromMetrics[0];
+                promUsedJSHeapSize_ = LinkedPromMetrics[1];
             }
         }
 
-        private IPromMetric promTotalJSHeapSize;
-        private IPromMetric promUsedJSHeapSize;
+        private IPromMetric promTotalJSHeapSize_;
+        private IPromMetric promUsedJSHeapSize_;
         
 
         public PerfMemoryMetric()
@@ -52,7 +54,7 @@ namespace PromRepublisher.MetricsCommon
             };
         }
 
-        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, string[] commonLabels)
+        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, CommonLabelsInfo commonLabels, ILogger logger)
         {
             try
             {
@@ -74,8 +76,8 @@ namespace PromRepublisher.MetricsCommon
 
                 using (Registry.AcquireMetricValueUpdateLock())
                 {
-                    promTotalJSHeapSize.Set(totalJSHeapSize, commonLabels);
-                    promUsedJSHeapSize.Set(usedJSHeapSize, commonLabels);
+                    promTotalJSHeapSize_.Set(totalJSHeapSize, commonLabels);
+                    promUsedJSHeapSize_.Set(usedJSHeapSize, commonLabels);
                 }
 
                 return true;

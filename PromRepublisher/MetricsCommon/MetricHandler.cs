@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace PromRepublisher.MetricsCommon
 {
     public class MetricHandler
     {
-
         private readonly IMetricRegistry metricRegistry_;
 
         const string metricsProp = "metrics";
@@ -15,9 +14,9 @@ namespace PromRepublisher.MetricsCommon
             metricRegistry_ = metricRegistry;
         }
 
-        public void OnMetric(ref JsonElement jel)
+        public void OnMetric(ref JsonElement jel, ILogger logger)
         {
-            string[] commonLabels = IGlueMetric.GetCommonLabelValues(ref jel);
+            CommonLabelsInfo commonLabels = IGlueMetric.GetCommonLabelValues(ref jel);
 
             // find the "metrics" object
             if (!jel.TryGetProperty(metricsProp, out JsonElement metricsEl))
@@ -40,13 +39,14 @@ namespace PromRepublisher.MetricsCommon
                     IGlueMetric glueMetric = metricRegistry_.GetMetricByPropName(propName);
                     if(glueMetric is null)
                     {
-                        metricRegistry_.ReportUnhandledMetric(commonLabels.Concat(new string[] { propName }).ToArray());
+                        metricRegistry_.ReportUnhandledMetric(commonLabels.ConcatLabels(propName));
                         continue;
                     }
+
                     JsonElement metricEl = item.Value;
-                    if(!glueMetric.ParseJson(ref metricEl, ref jel, commonLabels))
+                    if(!glueMetric.ParseJson(ref metricEl, ref jel, commonLabels, logger))
                     {
-                        metricRegistry_.ReportUnhandledMetric(commonLabels.Concat(new string[] { propName }).ToArray());
+                        metricRegistry_.ReportUnhandledMetric(commonLabels.ConcatLabels(propName));
                     }
                 }
             }

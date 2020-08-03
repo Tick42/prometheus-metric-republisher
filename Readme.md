@@ -35,6 +35,23 @@ This metric will be transformed into the following Prometheus metrics:
 | glue_web_navigation_duration_total | Counter | Total duration of `navigation` entries.<br>Duration is measured as the difference `loadEventEnd` - `unloadEventStart` |
 | glue_web_navigation_render_duration_total | Counter | Total render duration of `navigation` entries.<br>Duration is measured as the difference `domComplete` - `responseEnd` |
 
+### /App/reporting/features
+The `PerfSummary` and `PerfApp` datapoints of this metric will be transformed into the following Prometheus metrics:
+
+|Name|Type|Description|
+|----|:--:|-----------|
+| glue_app_process_cpu_percent | Gauge | Application process CPU usage |
+| glue_app_process_memory_kb | Gauge | Application process memory in kB |
+| glue_cpu_percent | Gauge | Glue CPU usage |
+| glue_memory_gb | Gauge | Memory used by Glue in GB |
+| glue_sys_cpu_percent | Gauge | Total CPU usage |
+| glue_sys_memory_free_gb | Gauge | Free system memory in GB |
+| glue_sys_swap_memory_total_gb | Gauge | Total system swap memory in GB |
+| glue_sys_swap_memory_free_gb | Gauge | Free system swap memory in GB |
+
+CPU usage is the average for the period between two measurements.
+
+
 ## Sample Configuration
 
 ### Glue42 Windows
@@ -54,17 +71,21 @@ This will cause all windows running web applications to send performance metrics
 - `publishInterval` - specifies how often performance metrics are to be sent to the Glue42 Gateway. The value is in milliseconds.
 - `initialPublishTimeout` - when an application is started, it will wait the specified number of milliseconds before starting to send performance metrics to the Glue42 Gateway at regular intervals.
 
-
-
-### Per Application Configuration ___TODO___
-It is possible to enable perfomance metric publishing for individual applications. The correspoinding configuration needs to be added to the application configuration `.json` file.
-Here is a sample configuration:
+### Glue42 Applications
+Memory and CPU usage is automatically reported every 20 minutes or, whenever a Glue application is started or stopped.  
+The default reporting interval can be changed by adding the following configuration in `system.json`:  
 ```json
+    "perfCollector": {
+        "intervalSec": 60,
+        "eventDelaySec": 20,
+    }
 ```
+- `intervalSec` - specifies how often application memory and CPU metrics will be collected and reported. The value is in seconds.
+- `eventDelaySec` - initial delay in seconds. This makes sure that Glue does not spend sytem resources to collect performance data during startup.
 
 ### Glue42 Gateway
 Below is a sample metric publishing configuration to put in `system.json`
-This will publish/push `/App/performance/...` metrics to the sample app's web service endpoint
+This will publish (push) `/App/performance/...` and `/App/reporting/features` metrics to the sample app's web service endpoint
 ```json
     "gw": {
             "metrics": {
@@ -79,6 +100,7 @@ This will publish/push `/App/performance/...` metrics to the sample app's web se
                             "metrics": {
                                 "whitelist": [
                                     "#/App/performance/.*",
+                                    "/App/reporting/features",
                                 ]
                             }
                         }
@@ -103,4 +125,4 @@ scrape_configs:
 Please note that `scrape_interval` should not be shorter than the `publishInterval` in the Glue configuration.
 
 ## Other
-###### This application uses the [prometheus-net](https://github.com/prometheus-net/prometheus-net/) client library (MIT license) as a NuGet package
+* The sample application is intended to be started and stopped together with the Glue instance publishing data to it.

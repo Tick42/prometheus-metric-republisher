@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using PromRepublisher.MetricsCommon;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace PromRepublisher.MetricsCommon
 {
@@ -27,7 +24,7 @@ namespace PromRepublisher.MetricsCommon
                 },
             };
         }
-        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, string[] commonLabels)
+        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, CommonLabelsInfo commonLabels, ILogger logger)
         {
             // nothing: this metric is used internally
             return true;

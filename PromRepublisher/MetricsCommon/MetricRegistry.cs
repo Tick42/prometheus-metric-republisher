@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PromRepublisher.MetricsProm;
 using PromRepublisher.MetricsCommon.Locks;
 
 namespace PromRepublisher.MetricsCommon
@@ -18,9 +19,9 @@ namespace PromRepublisher.MetricsCommon
 
         public MetricRegistry()
         {
-            IGlueMetric unhandledMet = new UnhandledMetric();
-            AddGlueMetric(unhandledMet);
-            unhandled_ = unhandledMet.LinkedPromMetrics[0];
+            IGlueMetric unhandledMetric = new UnhandledMetric();
+            AddGlueMetric(unhandledMetric);
+            unhandled_ = unhandledMetric.LinkedPromMetrics[0];
         }
         public void AddGlueMetric(IGlueMetric glueMetric)
         {

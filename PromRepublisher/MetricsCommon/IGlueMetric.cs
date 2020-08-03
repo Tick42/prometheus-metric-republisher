@@ -1,45 +1,35 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace PromRepublisher.MetricsCommon
 {
     public interface IGlueMetric
     {
-        public static readonly string[] CommonLabels = { "app", "user", "proc" };
+        // public static readonly string[] CommonLabels = { "app", "user", "proc" };
+
+        public static readonly CommonLabelsInfo CommonLabels = new CommonLabelsInfo { AppName = "app", UserName = "user", Pid = "proc" };
         public PromMetricDef[] PromMetricDefs { get; }
         public string GlueMetricPropName { get; }
         public IPromMetric[] LinkedPromMetrics { get; set; }
         public IMetricRegistry Registry { get; set; }
-        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, string[] commonLabels = null);
-        public static string[] GetCommonLabelValues(ref JsonElement jel)
+        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, CommonLabelsInfo commonLabels, ILogger logger);
+        public static CommonLabelsInfo GetCommonLabelValues(ref JsonElement jel)
         {
-            string appName = null;
-            string user = null;
-            string process = null;
+            var result = new CommonLabelsInfo();
             if (jel.TryGetProperty("identity", out JsonElement identityEl))
             {
-                if (identityEl.TryGetProperty("application", out JsonElement appNameEl))
-                {
-                    appName = appNameEl.ToString();
-                }
-                if (identityEl.TryGetProperty("user", out JsonElement userEl))
-                {
-                    user = userEl.ToString();
-                }
-                if (identityEl.TryGetProperty("process", out JsonElement processEl))
-                {
-                    process = processEl.ToString();
-                }
-            }
-            return new string[] { appName ?? "", user ?? "", process ?? "" };
-        }
 
-        public static void CopyCommonLabelValues(string[] from, string[] to)
-        {
-            int nLabels = CommonLabels.Length;
-            for( int i = 0; i < nLabels; ++i )
-            {
-                to[i] = from[i];
+                result.AppName = identityEl.TryGetProperty("application", out JsonElement appNameEl) ? appNameEl.ToString() : "";
+                result.UserName = identityEl.TryGetProperty("user", out JsonElement userEl) ? userEl.ToString() : "";
+                result.Pid = identityEl.TryGetProperty("process", out JsonElement processEl) ? processEl.ToString() : "";
             }
+            else
+            {
+                result.AppName = "";
+                result.UserName = "";
+                result.Pid = "";
+            }
+            return result;
         }
         
     }

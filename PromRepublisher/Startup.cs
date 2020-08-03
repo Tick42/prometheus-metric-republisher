@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PromRepublisher.MetricsCommon;
+using PromRepublisher.MetricsGlue;
 
 namespace PromRepublisher
 {
@@ -24,6 +25,7 @@ namespace PromRepublisher
             // add Glue metrics;
             registry.AddGlueMetric(new PerfMemoryMetric());
             registry.AddGlueMetric(new PerfEntriesMetric());
+            registry.AddGlueMetric(new ReportingFeaturesMetric());
             services.AddSingleton(registry);
 
             services.AddSingleton(new MetricHandler(registry));
@@ -41,9 +43,7 @@ namespace PromRepublisher
             //app.UseHttpsRedirection();
 
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

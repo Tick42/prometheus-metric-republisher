@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using PromRepublisher.MetricsCommon;
 
-namespace PromRepublisher.MetricsCommon
+namespace PromRepublisher.MetricsGlue
 {
     public class PerfEntriesMetric : IGlueMetric
     {
@@ -18,21 +20,21 @@ namespace PromRepublisher.MetricsCommon
             set
             {
                 linkedPromMetrics_ = value;
-                promResourceCount = LinkedPromMetrics[0];
-                promResourceSize = LinkedPromMetrics[1];
-                promResourceDuration = LinkedPromMetrics[2];
-                promNavigationCount = LinkedPromMetrics[3];
-                promNavigationDuration = LinkedPromMetrics[4];
-                promNavigationRenderDuration = LinkedPromMetrics[5];
+                promResourceCount_ = LinkedPromMetrics[0];
+                promResourceSize_ = LinkedPromMetrics[1];
+                promResourceDuration_ = LinkedPromMetrics[2];
+                promNavigationCount_ = LinkedPromMetrics[3];
+                promNavigationDuration_ = LinkedPromMetrics[4];
+                promNavigationRenderDuration_ = LinkedPromMetrics[5];
             }
         }
 
-        private IPromMetric promResourceCount;
-        private IPromMetric promResourceSize;
-        private IPromMetric promResourceDuration;
-        private IPromMetric promNavigationCount;
-        private IPromMetric promNavigationDuration;
-        private IPromMetric promNavigationRenderDuration;
+        private IPromMetric promResourceCount_;
+        private IPromMetric promResourceSize_;
+        private IPromMetric promResourceDuration_;
+        private IPromMetric promNavigationCount_;
+        private IPromMetric promNavigationDuration_;
+        private IPromMetric promNavigationRenderDuration_;
 
         public PerfEntriesMetric()
         {
@@ -89,7 +91,7 @@ namespace PromRepublisher.MetricsCommon
             };
         }
 
-        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, string[] commonLabels)
+        public bool ParseJson(ref JsonElement metricEl, ref JsonElement rootEl, CommonLabelsInfo commonLabels, ILogger logger)
         {
             try
             {
@@ -155,16 +157,13 @@ namespace PromRepublisher.MetricsCommon
 
                 using (Registry.AcquireMetricValueUpdateLock())
                 {
-                    promResourceCount.Inc(resourceCount, commonLabels);
-                    promResourceSize.Inc(resourceSize, commonLabels);
-                    promResourceDuration.Inc(resourceDuration, commonLabels);
-                    promNavigationCount.Inc(navigationCount, commonLabels);
-                    promNavigationDuration.Inc(navigationDuration, commonLabels);
-                    promNavigationRenderDuration.Inc(navigationRenderDuration, commonLabels);
-                    //promPaintCount.Inc(paintCount, commonLabels);
-                    //promPaintDuration.Inc(paintDuration, commonLabels);
+                    promResourceCount_.Inc(resourceCount, commonLabels);
+                    promResourceSize_.Inc(resourceSize, commonLabels);
+                    promResourceDuration_.Inc(resourceDuration, commonLabels);
+                    promNavigationCount_.Inc(navigationCount, commonLabels);
+                    promNavigationDuration_.Inc(navigationDuration, commonLabels);
+                    promNavigationRenderDuration_.Inc(navigationRenderDuration, commonLabels);
                 }
-
                 return true;
             }
             catch

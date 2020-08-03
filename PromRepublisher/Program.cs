@@ -18,6 +18,15 @@ namespace PromRepublisher
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    //logging.ClearProviders();
+                    try
+                    {
+                        logging.AddLog4Net();
+                    }
+                    catch { }
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -7,7 +7,7 @@ namespace PromRepublisher.MetricsCommon
     {
         // public static readonly string[] CommonLabels = { "app", "user", "proc" };
 
-        public static readonly CommonLabelsInfo CommonLabels = new CommonLabelsInfo { AppName = "app", UserName = "user", Pid = "proc" };
+        public static readonly CommonLabelsInfo CommonLabels = new CommonLabelsInfo { AppName = "app", AppInstance = "appInstance", UserName = "user", Pid = "pid" };
         public PromMetricDef[] PromMetricDefs { get; }
         public string GlueMetricPropName { get; }
         public IPromMetric[] LinkedPromMetrics { get; set; }
@@ -22,6 +22,7 @@ namespace PromRepublisher.MetricsCommon
                 result.AppName = identityEl.TryGetProperty("application", out JsonElement appNameEl) ? appNameEl.ToString() : "";
                 result.UserName = identityEl.TryGetProperty("user", out JsonElement userEl) ? userEl.ToString() : "";
                 result.Pid = identityEl.TryGetProperty("process", out JsonElement processEl) ? processEl.ToString() : "";
+                result.AppInstance = identityEl.TryGetProperty("instance", out JsonElement instanceEl) ? instanceEl.ToString() : "";
             }
             else
             {

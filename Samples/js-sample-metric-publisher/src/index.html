@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<style>
+  td { border: 1.5px solid black; padding:6px;}
+  table {border-collapse:collapse;}
+</style>
+<head>
+</head>
+
+<body style="background-color:#E0E0E0">
+   <div style="font-family:Tahoma">
+      <!--
+	  <span>Sample Custom Metric Publisher</span>
+      <br><br>
+	  -->
+      <table>
+         <tr><td>Glue connection</td><td id="connStatus"></td></tr>
+      </table>
+	  <br><br>
+	  Sample Custom Metrics:<br>
+      <table>
+         <tr><td>Custom Couter</td><td><button style="width:128px" id="btnCustomCounter" onclick="BtnCustomCounter_Click()">Increase</button></td> <td id="elCustomCounter" align="center"></td></tr>
+         <tr><td>Custom Gauge</td><td><button style="width:128px" id="btnCustomGauge" onclick="BtnCustomGauge_Click()">Change</button></td> <td id="elCustomGauge" align="center"></td></tr>
+      </table>
+	  
+   </div>
+</body>
+<script src="index.js"></script>
+</html>

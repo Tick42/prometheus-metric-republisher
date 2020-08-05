@@ -25,6 +25,10 @@ namespace PromRepublisher.MetricsCommon
         }
         public void AddGlueMetric(IGlueMetric glueMetric)
         {
+            if( glueMetrics_.ContainsKey(glueMetric.GlueMetricPropName) )
+            {
+                throw new Exception("Glue metric for '" + glueMetric.GlueMetricPropName + "' already registered");
+            }
             List<IPromMetric> promMetrics = new List<IPromMetric>();
             foreach (PromMetricDef def in glueMetric.PromMetricDefs)
             {
@@ -51,7 +55,6 @@ namespace PromRepublisher.MetricsCommon
             {
                 promMetrics_.Add(promMetric.Name, promMetric);
             }
-
             return;
         }
 

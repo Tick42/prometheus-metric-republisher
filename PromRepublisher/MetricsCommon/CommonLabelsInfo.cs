@@ -8,10 +8,13 @@ namespace PromRepublisher.MetricsCommon
         public string UserName { get; set; }
         public string Pid { get; set; }
 
+        public string AppInstance { get; set; }
+
         public CommonLabelsInfo() { }
         public CommonLabelsInfo(CommonLabelsInfo src)
         {
             AppName = src.AppName;
+            AppInstance = src.AppInstance;
             UserName = src.UserName;
             Pid = src.Pid;
         }
@@ -29,6 +32,7 @@ namespace PromRepublisher.MetricsCommon
         {
             return new string[] {
                 labels.AppName,
+                labels.AppInstance,
                 labels.UserName,
                 labels.Pid
             };

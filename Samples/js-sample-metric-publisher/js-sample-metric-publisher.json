@@ -1,0 +1,16 @@
+{
+    "name":"js-sample-metric-publisher",
+    "title":"JS Sample Metric Publisher",
+    "caption": "JS Sample Metric Publisher",
+    "type": "window",
+    "details":{
+        "url":"http://localhost:22080/js-sample-metric-publisher/src/index.html",
+        "mode": "flat",
+        "width": 320,
+        "height": 240,
+        "autoInjectAPI":{
+            "enabled": true,
+            "autoInit": false
+        }
+	}		 
+}

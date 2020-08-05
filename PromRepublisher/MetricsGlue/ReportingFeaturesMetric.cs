@@ -126,6 +126,7 @@ namespace PromRepublisher.MetricsGlue
         private class PerfAppInfo
         {
             public string AppName;
+            public string AppInstance;
             public string Pid;
             public int MemoryKB;
             public double Cpu;
@@ -202,6 +203,7 @@ namespace PromRepublisher.MetricsGlue
                     foreach (var info in perfAppInfos)
                     {
                         appLabels.AppName = info.AppName;
+                        appLabels.AppInstance = info.AppInstance;
                         appLabels.Pid = info.Pid;
                         promAppMemoryKB_.Set(info.MemoryKB, appLabels);
                         promAppCpu_.Set(info.Cpu, appLabels);
@@ -229,6 +231,7 @@ namespace PromRepublisher.MetricsGlue
                     JsonElement root = doc.RootElement;
                     PerfAppInfo info = new PerfAppInfo();
                     info.AppName = root.GetProperty("name").ToString();
+                    info.AppInstance = root.GetProperty("instance").ToString();
                     info.Pid = root.GetProperty("pid").ToString();
                     info.MemoryKB = root.TryGetProperty("memoryKB", out JsonElement memoryKBEl) ? memoryKBEl.GetInt32() : 0;
                     info.Cpu = root.TryGetProperty("cpu", out JsonElement cpuEl) ? cpuEl.GetDouble() : 0;

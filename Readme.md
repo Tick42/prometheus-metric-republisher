@@ -88,6 +88,7 @@ Below is a sample metric publishing configuration to put in `system.json`
 This will publish (push) `/App/performance/...` and `/App/reporting/features` metrics to the sample app's web service endpoint
 ```json
     "gw": {
+        "configuration": {
             "metrics": {
                 "publishers": ["rest"],
                 "rest": {
@@ -109,6 +110,7 @@ This will publish (push) `/App/performance/...` and `/App/reporting/features` me
                 }                
             }
         }
+    }
 ```
 
 ### Prometheus
